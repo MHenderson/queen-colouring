@@ -1,0 +1,6 @@
+#!/bin/bash
+# First parameter is number of iterations  ## BROKEN
+# Second parameter is type
+# Third parameter is ordering
+# Fourth parameter is filename
+parallel -j2 --eta ccli greedy --type=$2 --ordering=$3 --seed={1} $4 :::: $1
