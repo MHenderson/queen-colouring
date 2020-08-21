@@ -8,9 +8,9 @@ seeds:=seeds.txt
 
 problem_file:=$(src_dir)/queen16_16.col
 result_file=$(addsuffix .res, $(problem_file))
-iterations:=1000
-type:=simple
-ordering:=lbfsr
+iterations:=10000
+type:=random
+ordering:=lbfsd
 
 chromatic_approx.txt: $(output)
 	sort -n $< | head -n 1 > $@
