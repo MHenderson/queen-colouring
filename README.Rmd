@@ -1,0 +1,139 @@
+---
+title: "Colouring Queen Graphs"
+author: "Matthew Henderson"
+date: "22/09/2021"
+output:
+  github_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE)
+```
+
+## Using ccli from R
+
+ccli is a bash script for calling Culberson's colouring programs
+from the command-line.
+
+The `ccli_greedy` function below is used to call Culberson's
+greedy program from R via ccli.
+
+There is no return value from `ccli_greedy`. Instead the result if
+written to a file which has the same name as the input file
+appended with a .res extension.
+
+Notice here that both ccli and culberson's colouring programs have
+been installed under /opt and so those paths have to be given
+in the env argument.
+
+```{r}
+ccli_greedy <- function(problem_file, seed = 42, type = "random", ordering = "lbfsd") {
+  system2("ccli",
+    args = glue::glue("greedy --type={type} --ordering={ordering} --seed={seed} {problem_file}"),
+    env = "PATH=$PATH:/opt/color/bin:/opt/ccli/",
+    stdout = FALSE, stderr = FALSE)
+}
+```
+
+For example,
+to colour the 16x16 queen graph
+using random vertex ordering
+and a simple greedy approach.
+
+```{r}
+set.seed(42)
+
+ccli_greedy(problem_file = "graphs/queen16_16.col",
+            type = "simple", ordering = "random")
+```
+
+```{r}
+readLines(file("graphs/queen16_16.col.res"))
+```
+
+## Number of colours used in a greedy colouring
+
+In the next section we present the results
+of an experiment into greedy colouring of
+queen graphs. For this experiment we need
+a function that calls `ccli_greedy`
+and parses the number of colours used
+from the resulting output file.
+
+```{r}
+ccli_greedy_clrs <- function(problem_file, seed = 42, type = "simple", ordering = "random") {
+  output_file <- paste0(problem_file, ".res")
+  if(file.exists(output_file)) {
+    file.remove(output_file)
+  }
+  x <- ccli_greedy(problem_file, seed, type, ordering)
+  output <- readr::read_file(output_file)
+  file.remove(output_file)
+  as.numeric(stringr::str_match_all(output, "CLRS ([0-9]+)")[[1]][,2])
+}
+```
+
+For example,
+
+```{r}
+ccli_greedy_clrs(problem_file = "graphs/queen16_16.col",
+                 type = "simple", ordering = "random")
+```
+
+
+
+
+Notice that this number can be
+much larger than the number of colours
+in a colouring with the minimal number of colours.
+
+# Colouring Queen Graphs
+
+Put every experiment into a row of a tibble.
+
+For many experiments use the cross functions.
+
+```{r}
+library(tibble)
+
+(experiments <- tribble(~problem_file, ~seed, ~type, ~ordering,
+        "graphs/queen10_10.col", 42, "simple", "random",
+        "graphs/queen10_10.col", 43, "simple", "random",
+        "graphs/queen10_10.col", 44, "simple", "random",
+        "graphs/queen16_16.col", 42, "simple", "random",
+        "graphs/queen16_16.col", 41, "simple", "random",
+        "graphs/queen16_16.col", 40, "simple", "random",
+        ))
+```
+
+Use pmap from purrr to run an experiment for each row.
+
+```{r}
+library(dplyr)
+library(purrr)
+
+(results <- experiments %>%
+  mutate(
+    n_colours = pmap_dbl(experiments, ccli_greedy_clrs)
+  ))
+```
+
+Now we can use summarise to find the minimum number of colours
+for each graph.
+
+```{r}
+results %>%
+  group_by(problem_file) %>%
+  summarise(
+    n_colours = min(n_colours)
+  )
+```
+Notice that in this experiment we are trusting that the files
+represent the graphs they claim to represent. But we don't really
+know that. So here is a good application for the work on graph
+property testing.

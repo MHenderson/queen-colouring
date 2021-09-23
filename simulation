@@ -1,9 +1,0 @@
-#!/bin/bash
-# First parameter is number of iterations
-# Second parameter is type
-# Third parameter is ordering
-# Fourth parameter is filename
-for (( i=1; i<=$1; ++i ))
-do
- ccli greedy --type=$2 --ordering=$3 --seed=$RANDOM $4
-done
