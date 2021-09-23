@@ -46,7 +46,7 @@ ccli_greedy(problem_file = "graphs/queen16_16.col",
 
 ``` r
 readLines(file("graphs/queen16_16.col.res"))
-#>  [1] "CLRS 23 FROM GREEDY cpu =  0.00 pid = 26540"                                     
+#>  [1] "CLRS 23 FROM GREEDY cpu =  0.00 pid = 338"                                       
 #>  [2] " 20   5   7  22  10  12   4   9   6  11  14   2   8   3   1  15   1  15  11   6 "
 #>  [3] " 18  14  19   2  17   5   4   3  16  13   7  10   2   3   8   9  17  10  11   1 "
 #>  [4] " 13  18  21   7  15  20   4   6  12   4  10  13  15  20   5  18   8   1  11  19 "
@@ -235,7 +235,7 @@ tic()
 #> 10 graphs/queen14_14.col simple random   61413        21
 #> # … with 2,390 more rows
 toc()
-#> 121.824 sec elapsed
+#> 132.853 sec elapsed
 ```
 
 ``` r
