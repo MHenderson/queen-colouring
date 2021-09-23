@@ -12,6 +12,7 @@ knitr::opts_chunk$set(
   echo = TRUE,
   collapse = TRUE,
   comment = "#>",
+  fig.path = "figure/",
   message = FALSE)
 ```
 
@@ -31,7 +32,7 @@ Notice here that both ccli and culberson's colouring programs have
 been installed under /opt and so those paths have to be given
 in the env argument.
 
-```{r}
+```{r ccli_greedy}
 ccli_greedy <- function(problem_file, seed = 42, type = "random", ordering = "lbfsd") {
   system2("ccli",
     args = glue::glue("greedy --type={type} --ordering={ordering} --seed={seed} {problem_file}"),
@@ -45,14 +46,14 @@ to colour the 16x16 queen graph
 using random vertex ordering
 and a simple greedy approach.
 
-```{r}
+```{r ccli_greedy_demo}
 set.seed(42)
 
 ccli_greedy(problem_file = "graphs/queen16_16.col",
             type = "simple", ordering = "random")
 ```
 
-```{r}
+```{r ccli_greedy_output}
 readLines(file("graphs/queen16_16.col.res"))
 ```
 
@@ -65,7 +66,7 @@ a function that calls `ccli_greedy`
 and parses the number of colours used
 from the resulting output file.
 
-```{r}
+```{r ccli_greedy_clrs}
 ccli_greedy_clrs <- function(problem_file, seed = 42, type = "simple", ordering = "random") {
   output_file <- paste0(problem_file, ".res")
   if(file.exists(output_file)) {
@@ -80,13 +81,10 @@ ccli_greedy_clrs <- function(problem_file, seed = 42, type = "simple", ordering 
 
 For example,
 
-```{r}
+```{r ccli_greedy_clrs_demo}
 ccli_greedy_clrs(problem_file = "graphs/queen16_16.col",
                  type = "simple", ordering = "random")
 ```
-
-
-
 
 Notice that this number can be
 much larger than the number of colours
@@ -94,11 +92,26 @@ in a colouring with the minimal number of colours.
 
 # Colouring Queen Graphs
 
-Put every experiment into a row of a tibble.
+This experiment will test different combinations
+of algorithms, vertex orderings and random seeds
+on the number of colours used in colourings of
+queen graphs.
 
-For many experiments use the cross functions.
+The entire experiment will be represented by
+a tibble with variables for each of the tested
+parameters. A row of the tibble represents a
+single colouring and after the experiment is
+finshed we will augment this tibble with a new
+column giving the number of colours used in each
+colouring.
 
-```{r}
+Here is an example with three colourings of the 10x10
+queen graph and three colourings of the 16x16 queen graph.
+All use a simple greedy approach with random vertex
+ordering. The only difference in each call a different
+seed is used.
+
+```{r experiment_tibble_example}
 library(tibble)
 
 (experiments <- tribble(~problem_file, ~seed, ~type, ~ordering,
@@ -111,9 +124,12 @@ library(tibble)
         ))
 ```
 
-Use pmap from purrr to run an experiment for each row.
+Use mutate from dplyr and pmap from purrr
+to run an experiment for each row
+and augment the data frame with the number
+of colours used.
 
-```{r}
+```{r results_example}
 library(dplyr)
 library(purrr)
 
@@ -123,10 +139,12 @@ library(purrr)
   ))
 ```
 
-Now we can use summarise to find the minimum number of colours
-for each graph.
+Now summarise the experiments
+to find the minimum number of colours
+used in colourings
+of each graph.
 
-```{r}
+```{r results_summary_example}
 results %>%
   group_by(problem_file) %>%
   summarise(
@@ -137,3 +155,63 @@ Notice that in this experiment we are trusting that the files
 represent the graphs they claim to represent. But we don't really
 know that. So here is a good application for the work on graph
 property testing.
+
+# Colouring Queen Graphs II
+
+Now lettuce really do a bigger experiment.
+
+```{r experiments}
+library(glue)
+
+n_iter <- 50
+orders <- 5:16
+
+set.seed(42)
+
+seeds <- sample(1:100000, n_iter)
+files <- glue("queen{orders}_{orders}.col") %>% as.character()
+
+(experiments <- list(
+  problem_file = file.path("graphs", files),
+  type = c("simple", "random"),
+  ordering = c("random", "lbsfr"),
+  seed = seeds
+) %>%
+  cross_df())
+```
+
+```{r results}
+library(tictoc)
+
+tic()
+(results <- experiments %>%
+  mutate(
+    n_colours = pmap_dbl(experiments, ccli_greedy_clrs)
+  ))
+toc()
+```
+
+```{r results_summary}
+(min_colours <- results %>%
+  group_by(problem_file) %>%
+  summarise(
+    n_colours = min(n_colours)
+  ))
+```
+
+```{r results_plot}
+library(ggplot2)
+library(stringr)
+
+results %>%
+  mutate(
+    n = as.numeric(str_match(problem_file, "([0-9]+).col")[,2])
+  ) %>%
+  ggplot(aes(n, n_colours)) +
+    geom_point(size = .5, alpha = .5) +
+    geom_abline(colour = "blue", alpha = .2, slope = 1, intercept = 0) +
+    ylim(0, 30) +
+    xlim(0, 30) +
+    theme_light()
+```
+
