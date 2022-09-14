@@ -5,6 +5,8 @@ date: "14/09/2022"
 output:
   github_document:
     toc: yes
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -25,14 +27,31 @@ library(stringr)
 
 results <- read_rds(here("data", "results.rds"))
 
+results <- results %>%
+  mutate(
+    method = paste(type, ordering, sep = "+")
+  )
+
 results %>%
-  ggplot(aes(n, n_colours, colour = ordering)) +
-    geom_point(size = .5, alpha = .5) +
+  ggplot(aes(n, n_colours, colour = method)) +
+    geom_jitter(size = 1, alpha = .03, height = 0) +
     geom_abline(colour = "blue", alpha = .2, slope = 1, intercept = 0) +
     ylim(0, 30) +
     xlim(0, 30) +
-    theme_light() +
-    facet_wrap(type ~ ordering) +
     theme_minimal() +
     theme(legend.position = "none")
 ```
+
+
+```{r}
+results %>%
+  group_by(n) %>%
+  slice_min(n_colours) %>%
+    ggplot(aes(n, n_colours, colour = method)) +
+    geom_jitter(size = 1, alpha = .3, height = 0) +
+    geom_abline(colour = "blue", alpha = .2, slope = 1, intercept = 0) +
+    ylim(0, 30) +
+    xlim(0, 30) +
+    theme_minimal()
+```
+
