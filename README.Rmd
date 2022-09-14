@@ -1,7 +1,7 @@
 ---
 title: "Colouring Queen Graphs"
 author: "Matthew Henderson"
-date: "22/09/2021"
+date: "14/09/2022"
 output:
   github_document:
     toc: yes
@@ -16,202 +16,23 @@ knitr::opts_chunk$set(
   message = FALSE)
 ```
 
-## Using ccli from R
-
-ccli is a bash script for calling Culberson's colouring programs
-from the command-line.
-
-The `ccli_greedy` function below is used to call Culberson's
-greedy program from R via ccli.
-
-There is no return value from `ccli_greedy`. Instead the result if
-written to a file which has the same name as the input file
-appended with a .res extension.
-
-Notice here that both ccli and culberson's colouring programs have
-been installed under /opt and so those paths have to be given
-in the env argument.
-
-```{r ccli_greedy}
-ccli_greedy <- function(problem_file, seed = 42, type = "random", ordering = "lbfsd") {
-  system2("ccli",
-    args = glue::glue("greedy --type={type} --ordering={ordering} --seed={seed} {problem_file}"),
-    env = "PATH=$PATH:/opt/color/bin:/opt/ccli/",
-    stdout = FALSE, stderr = FALSE)
-}
-```
-
-For example,
-to colour the 16x16 queen graph
-using random vertex ordering
-and a simple greedy approach.
-
-```{r ccli_greedy_demo}
-set.seed(42)
-
-ccli_greedy(problem_file = "graphs/queen16_16.col",
-            type = "simple", ordering = "random")
-```
-
-```{r ccli_greedy_output}
-readLines(file("graphs/queen16_16.col.res"))
-```
-
-## Number of colours used in a greedy colouring
-
-In the next section we present the results
-of an experiment into greedy colouring of
-queen graphs. For this experiment we need
-a function that calls `ccli_greedy`
-and parses the number of colours used
-from the resulting output file.
-
-```{r ccli_greedy_clrs}
-ccli_greedy_clrs <- function(problem_file, seed = 42, type = "simple", ordering = "random") {
-  output_file <- paste0(problem_file, ".res")
-  if(file.exists(output_file)) {
-    file.remove(output_file)
-  }
-  x <- ccli_greedy(problem_file, seed, type, ordering)
-  output <- readr::read_file(output_file)
-  file.remove(output_file)
-  as.numeric(stringr::str_match_all(output, "CLRS ([0-9]+)")[[1]][,2])
-}
-```
-
-For example,
-
-```{r ccli_greedy_clrs_demo}
-ccli_greedy_clrs(problem_file = "graphs/queen16_16.col",
-                 type = "simple", ordering = "random")
-```
-
-Notice that this number can be
-much larger than the number of colours
-in a colouring with the minimal number of colours.
-
-# Colouring Queen Graphs
-
-This experiment will test different combinations
-of algorithms, vertex orderings and random seeds
-on the number of colours used in colourings of
-queen graphs.
-
-The entire experiment will be represented by
-a tibble with variables for each of the tested
-parameters. A row of the tibble represents a
-single colouring and after the experiment is
-finshed we will augment this tibble with a new
-column giving the number of colours used in each
-colouring.
-
-Here is an example with three colourings of the 10x10
-queen graph and three colourings of the 16x16 queen graph.
-All use a simple greedy approach with random vertex
-ordering. The only difference in each call a different
-seed is used.
-
-```{r experiment_tibble_example}
-library(tibble)
-
-(experiments <- tribble(~problem_file, ~seed, ~type, ~ordering,
-        "graphs/queen10_10.col", 42, "simple", "random",
-        "graphs/queen10_10.col", 43, "simple", "random",
-        "graphs/queen10_10.col", 44, "simple", "random",
-        "graphs/queen16_16.col", 42, "simple", "random",
-        "graphs/queen16_16.col", 41, "simple", "random",
-        "graphs/queen16_16.col", 40, "simple", "random",
-        ))
-```
-
-Use mutate from dplyr and pmap from purrr
-to run an experiment for each row
-and augment the data frame with the number
-of colours used.
-
-```{r results_example}
+```{r results_plot, echo = FALSE, fig.height=10}
 library(dplyr)
-library(purrr)
-
-(results <- experiments %>%
-  mutate(
-    n_colours = pmap_dbl(experiments, ccli_greedy_clrs)
-  ))
-```
-
-Now summarise the experiments
-to find the minimum number of colours
-used in colourings
-of each graph.
-
-```{r results_summary_example}
-results %>%
-  group_by(problem_file) %>%
-  summarise(
-    n_colours = min(n_colours)
-  )
-```
-Notice that in this experiment we are trusting that the files
-represent the graphs they claim to represent. But we don't really
-know that. So here is a good application for the work on graph
-property testing.
-
-# Colouring Queen Graphs II
-
-Now lettuce really do a bigger experiment.
-
-```{r experiments}
-library(glue)
-
-n_iter <- 50
-orders <- 5:16
-
-set.seed(42)
-
-seeds <- sample(1:100000, n_iter)
-files <- glue("queen{orders}_{orders}.col") %>% as.character()
-
-(experiments <- list(
-  problem_file = file.path("graphs", files),
-  type = c("simple", "random"),
-  ordering = c("random", "lbsfr"),
-  seed = seeds
-) %>%
-  cross_df())
-```
-
-```{r results}
-library(tictoc)
-
-tic()
-(results <- experiments %>%
-  mutate(
-    n_colours = pmap_dbl(experiments, ccli_greedy_clrs)
-  ))
-toc()
-```
-
-```{r results_summary}
-(min_colours <- results %>%
-  group_by(problem_file) %>%
-  summarise(
-    n_colours = min(n_colours)
-  ))
-```
-
-```{r results_plot}
 library(ggplot2)
+library(here)
+library(readr)
 library(stringr)
 
+results <- read_rds(here("data", "results.rds"))
+
 results %>%
-  mutate(
-    n = as.numeric(str_match(problem_file, "([0-9]+).col")[,2])
-  ) %>%
-  ggplot(aes(n, n_colours)) +
+  ggplot(aes(n, n_colours, colour = ordering)) +
     geom_point(size = .5, alpha = .5) +
     geom_abline(colour = "blue", alpha = .2, slope = 1, intercept = 0) +
     ylim(0, 30) +
     xlim(0, 30) +
-    theme_light()
+    theme_light() +
+    facet_wrap(type ~ ordering) +
+    theme_minimal() +
+    theme(legend.position = "none")
 ```
-
