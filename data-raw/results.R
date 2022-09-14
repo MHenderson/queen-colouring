@@ -6,40 +6,8 @@ library(readr)
 library(stringr)
 library(tictoc)
 
-ccli_greedy <- function(problem_file, seed = 42, type = "random", ordering = "lbfsd", cheat = FALSE, kempe = FALSE) {
-
-  if(cheat && kempe) {
-    args_string <- "greedy --cheat --kempe --type={type} --ordering={ordering} --seed={seed} {problem_file}"
-  } else if(cheat && !kempe) {
-    args_string <- "greedy --cheat --type={type} --ordering={ordering} --seed={seed} {problem_file}"
-  } else if(!cheat && kempe) {
-    args_string <- "greedy --kempe --type={type} --ordering={ordering} --seed={seed} {problem_file}"
-  } else {
-    args_string <- "greedy --type={type} --ordering={ordering} --seed={seed} {problem_file}"
-  }
-
-  system2("ccli",
-          args = glue::glue("greedy --type={type} --ordering={ordering} --seed={seed} {problem_file}"),
-          env = "PATH=$PATH:/opt/color/bin:/opt/ccli/",
-          stdout = FALSE, stderr = FALSE)
-
-}
-
-ccli_greedy_clrs <- function(problem_file, seed = 42, type = "simple", ordering = "random", cheat = FALSE, kempe = FALSE) {
-
-  output_file <- paste0(problem_file, ".res")
-
-  if(file.exists(output_file)) {
-    file.remove(output_file)
-  }
-
-  x <- ccli_greedy(problem_file, seed, type, ordering, cheat, kempe)
-
-  output <- readr::read_file(output_file)
-  file.remove(output_file)
-  as.numeric(stringr::str_match_all(output, "CLRS ([0-9]+)")[[1]][,2])
-
-}
+source(here("R", "ccli_greedy.R"))
+source(here("R", "ccli_greedy_clrs.R"))
 
 n_iter <- 5
 orders <- 5:16
