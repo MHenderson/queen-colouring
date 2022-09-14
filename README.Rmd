@@ -18,13 +18,36 @@ knitr::opts_chunk$set(
   message = FALSE)
 ```
 
-```{r results_plot, echo = FALSE, fig.height=10}
+# Colouring Queen Graphs in R with ccli
+
+```{r queen_colouring}
 library(dplyr)
 library(ggplot2)
 library(here)
+library(igraph)
 library(readr)
 library(stringr)
 
+source(here("R", "ccli_greedy.R"))
+
+queen_path <- here("graphs", "queen5_5.col")
+
+queen5 <- read_graph(queen_path, format = "dimacs")
+
+coloured_queen <- set_vertex_attr(queen5, "color", value = greedy(queen_path))
+
+plot(queen5,
+     vertex.size = 8,
+     vertex.size2 = 8,
+     vertex.label = NA,
+     vertex.color = vertex_attr(coloured_queen, "color"),
+     edge.arrow.mode = 0,
+     layout = layout_on_grid)
+```
+
+# Minimal Number of Colours in a Greedy Colouring of a Queen Graph
+
+```{r results_plot, echo = FALSE, fig.height=8}
 results <- read_rds(here("data", "results.rds"))
 
 results <- results %>%
@@ -43,7 +66,7 @@ results %>%
 ```
 
 
-```{r other_results_plot}
+```{r other_results_plot, echo=FALSE, fig.height=8}
 results %>%
   group_by(n) %>%
   slice_min(n_colours) %>%
@@ -54,4 +77,3 @@ results %>%
     xlim(0, 30) +
     theme_minimal()
 ```
-
