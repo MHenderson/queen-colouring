@@ -43,7 +43,7 @@ results %>%
 ```
 
 
-```{r}
+```{r other_results_plot}
 results %>%
   group_by(n) %>%
   slice_min(n_colours) %>%
