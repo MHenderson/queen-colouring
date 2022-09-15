@@ -10,17 +10,33 @@ ccli_greedy <- function(problem_file, seed = 42, type = "random", ordering = "lb
     args_string <- "greedy --type={type} --ordering={ordering} --seed={seed} {problem_file}"
   }
 
+  output_file <- paste0(problem_file, ".res")
+
+  if(file.exists(output_file)) {
+    file.remove(output_file)
+  }
+
   system2("ccli",
-          args = glue::glue("greedy --type={type} --ordering={ordering} --seed={seed} {problem_file}"),
+          args = glue::glue(args_string),
           env = "PATH=$PATH:/opt/color/bin:/opt/ccli/",
           stdout = FALSE, stderr = FALSE)
 
+  result <- readLines(file(output_file))
+
+  file.remove(output_file)
+
+  return(result)
+
 }
 
-greedy <- function(filename) {
-  ccli_greedy(filename)
-  colouring_res <- readLines(file(paste0(queen_path, ".res")))
+ccli_greedy_colouring <- function(problem_file, seed = 42, type = "simple", ordering = "random", cheat = FALSE, kempe = FALSE) {
+  colouring_res <- ccli_greedy(problem_file, seed, type, ordering, cheat, kempe)
   d <- as.numeric(stringr::str_split(paste(colouring_res[2:3], collapse = " "), " ")[[1]])
   d <- d[!is.na(d)]
   return(d)
+}
+
+ccli_greedy_n_colours <- function(problem_file, seed = 42, type = "simple", ordering = "random", cheat = FALSE, kempe = FALSE) {
+  colouring_res <- ccli_greedy(problem_file, seed, type, ordering, cheat, kempe)
+  as.numeric(stringr::str_match_all(colouring_res, "CLRS ([0-9]+)")[[1]][,2])
 }
