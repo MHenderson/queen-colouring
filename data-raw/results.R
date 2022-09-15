@@ -7,7 +7,6 @@ library(stringr)
 library(tictoc)
 
 source(here("R", "ccli_greedy.R"))
-source(here("R", "ccli_greedy_clrs.R"))
 
 n_iter <- 5
 orders <- 5:16
@@ -19,18 +18,18 @@ files <- glue("queen{orders}_{orders}.col") %>% as.character()
 
 experiments <- list(
     problem_file = here("graphs", files),
-    type = c("simple", "large", "small", "random"),
-    ordering = c("inorder", "random", "decdeg", "incdeg"),
-    seed = seeds,
-    cheat = c(TRUE, FALSE),
-    kempe = c(TRUE, FALSE)
+            type = c("simple", "large", "small", "random"),
+        ordering = c("inorder", "random", "decdeg", "incdeg"),
+            seed = seeds,
+           cheat = c(TRUE, FALSE),
+           kempe = c(TRUE, FALSE)
   ) %>%
     cross_df()
 
 tic()
 results <- experiments %>%
   mutate(
-    n_colours = pmap_dbl(experiments, ccli_greedy_clrs)
+    n_colours = pmap_dbl(experiments, ccli_greedy_n_colours)
   )
 toc()
 
