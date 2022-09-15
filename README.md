@@ -7,6 +7,9 @@ Matthew Henderson
     ccli](#colouring-queen-graphs-in-r-with-ccli)
 -   [Minimal Number of Colours in a Greedy Colouring of a Queen
     Graph](#minimal-number-of-colours-in-a-greedy-colouring-of-a-queen-graph)
+    -   [Kempe Reductions](#kempe-reductions)
+    -   [Cheat](#cheat)
+-   [Grundy Number of a Queen Graph](#grundy-number-of-a-queen-graph)
 
 # Colouring Queen Graphs in R with ccli
 
@@ -24,7 +27,7 @@ queen_path <- here("graphs", "queen5_5.col")
 
 queen5 <- read_graph(queen_path, format = "dimacs")
 
-coloured_queen <- set_vertex_attr(queen5, "color", value = greedy(queen_path))
+coloured_queen <- set_vertex_attr(queen5, "color", value = ccli_greedy_colouring(queen_path))
 
 plot(queen5,
      vertex.size = 8,
@@ -39,6 +42,23 @@ plot(queen5,
 
 # Minimal Number of Colours in a Greedy Colouring of a Queen Graph
 
-![](figure/results_plot-1.png)<!-- -->
+``` r
+results <- read_rds(here("data", "results.rds"))
+
+results <- results %>%
+  mutate(
+    method = paste(type, ordering, sep = "+")
+  )
+```
+
+## Kempe Reductions
+
+![](figure/kempe_plot-1.png)<!-- -->
+
+## Cheat
+
+![](figure/cheat_plot-1.png)<!-- -->
+
+# Grundy Number of a Queen Graph
 
 ![](figure/other_results_plot-1.png)<!-- -->

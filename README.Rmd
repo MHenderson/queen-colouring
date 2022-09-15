@@ -34,7 +34,7 @@ queen_path <- here("graphs", "queen5_5.col")
 
 queen5 <- read_graph(queen_path, format = "dimacs")
 
-coloured_queen <- set_vertex_attr(queen5, "color", value = greedy(queen_path))
+coloured_queen <- set_vertex_attr(queen5, "color", value = ccli_greedy_colouring(queen_path))
 
 plot(queen5,
      vertex.size = 8,
@@ -47,30 +47,46 @@ plot(queen5,
 
 # Minimal Number of Colours in a Greedy Colouring of a Queen Graph
 
-```{r results_plot, echo = FALSE, fig.height=8}
+```{r results}
 results <- read_rds(here("data", "results.rds"))
 
 results <- results %>%
   mutate(
     method = paste(type, ordering, sep = "+")
   )
+```
 
+## Kempe Reductions
+
+```{r kempe_plot, echo = FALSE, fig.height=8}
 results %>%
-  ggplot(aes(n, n_colours, colour = method)) +
-    geom_jitter(size = 1, alpha = .03, height = 0) +
+  ggplot(aes(n, n_colours, colour = kempe)) +
+    geom_jitter(size = 1, alpha = .5, height = 0) +
     geom_abline(colour = "blue", alpha = .2, slope = 1, intercept = 0) +
     ylim(0, 30) +
     xlim(0, 30) +
-    theme_minimal() +
-    theme(legend.position = "none")
+    theme_minimal()
 ```
 
+## Cheat
+
+```{r cheat_plot, echo = FALSE, fig.height=8}
+results %>%
+  ggplot(aes(n, n_colours, colour = cheat)) +
+    geom_jitter(size = 1, alpha = .5, height = 0) +
+    geom_abline(colour = "blue", alpha = .2, slope = 1, intercept = 0) +
+    ylim(0, 30) +
+    xlim(0, 30) +
+    theme_minimal()
+```
+
+# Grundy Number of a Queen Graph
 
 ```{r other_results_plot, echo=FALSE, fig.height=8}
 results %>%
   group_by(n) %>%
-  slice_min(n_colours) %>%
-    ggplot(aes(n, n_colours, colour = method)) +
+  slice_max(n_colours) %>%
+  ggplot(aes(n, n_colours, colour = method)) +
     geom_jitter(size = 1, alpha = .3, height = 0) +
     geom_abline(colour = "blue", alpha = .2, slope = 1, intercept = 0) +
     ylim(0, 30) +
