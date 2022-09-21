@@ -5,7 +5,7 @@
 
 # Load packages required to define the pipeline:
 library(targets)
-# library(tarchetypes) # Load other packages as needed. # nolint
+library(tarchetypes) # Load other packages as needed. # nolint
 
 # Set target options:
 tar_option_set(
@@ -28,7 +28,7 @@ tar_source()
 list(
   tar_target(
     name = experiments,
-    generate_experiments(n_iter = 6, orders = 5:7, seed = 42)
+    generate_experiments(n_iter = 50, orders = 5:16, seed = 42)
   ),
   tar_target(
     name = results,
@@ -37,5 +37,9 @@ list(
   tar_target(
     name = plot,
     plot_results(results)
+  ),
+  tar_render(
+    name = readme,
+    "README.Rmd"
   )
 )

@@ -45,51 +45,17 @@ plot(queen5,
      layout = layout_on_grid)
 ```
 
-# Minimal Number of Colours in a Greedy Colouring of a Queen Graph
-
-```{r results}
-results <- read_rds(here("data", "results.rds"))
-
-results <- results %>%
-  mutate(
-    method = paste(type, ordering, sep = "+")
-  )
-```
-
-## Kempe Reductions
-
-```{r kempe_plot, echo = FALSE, fig.height=8}
-results %>%
-  ggplot(aes(n, n_colours, colour = kempe)) +
-    geom_jitter(size = 1, alpha = .5, height = 0) +
-    geom_abline(colour = "blue", alpha = .2, slope = 1, intercept = 0) +
-    ylim(0, 30) +
-    xlim(0, 30) +
-    theme_minimal()
-```
-
-## Cheat
-
-```{r cheat_plot, echo = FALSE, fig.height=8}
-results %>%
-  ggplot(aes(n, n_colours, colour = cheat)) +
-    geom_jitter(size = 1, alpha = .5, height = 0) +
-    geom_abline(colour = "blue", alpha = .2, slope = 1, intercept = 0) +
-    ylim(0, 30) +
-    xlim(0, 30) +
-    theme_minimal()
-```
-
 # Grundy Number of a Queen Graph
 
+Could the Grundy number of a n x n Queen graph be 2n?
+Some tenuous evidence in this plot.
+
+For Grundy numbers we want something that works like
+Kempe reductions but does the opposite. To increase
+the number of colours used.
+
 ```{r other_results_plot, echo=FALSE, fig.height=8}
-results %>%
-  group_by(n) %>%
-  slice_max(n_colours) %>%
-  ggplot(aes(n, n_colours, colour = method)) +
-    geom_jitter(size = 1, alpha = .3, height = 0) +
-    geom_abline(colour = "blue", alpha = .2, slope = 1, intercept = 0) +
-    ylim(0, 30) +
-    xlim(0, 30) +
-    theme_minimal()
+library(targets)
+
+tar_read(plot)
 ```

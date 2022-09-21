@@ -5,10 +5,6 @@ Matthew Henderson
 
 -   [Colouring Queen Graphs in R with
     ccli](#colouring-queen-graphs-in-r-with-ccli)
--   [Minimal Number of Colours in a Greedy Colouring of a Queen
-    Graph](#minimal-number-of-colours-in-a-greedy-colouring-of-a-queen-graph)
-    -   [Kempe Reductions](#kempe-reductions)
-    -   [Cheat](#cheat)
 -   [Grundy Number of a Queen Graph](#grundy-number-of-a-queen-graph)
 
 # Colouring Queen Graphs in R with ccli
@@ -40,25 +36,12 @@ plot(queen5,
 
 ![](figure/queen_colouring-1.png)<!-- -->
 
-# Minimal Number of Colours in a Greedy Colouring of a Queen Graph
-
-``` r
-results <- read_rds(here("data", "results.rds"))
-
-results <- results %>%
-  mutate(
-    method = paste(type, ordering, sep = "+")
-  )
-```
-
-## Kempe Reductions
-
-![](figure/kempe_plot-1.png)<!-- -->
-
-## Cheat
-
-![](figure/cheat_plot-1.png)<!-- -->
-
 # Grundy Number of a Queen Graph
+
+Could the Grundy number of a n x n Queen graph be 2n? Some tenuous
+evidence in this plot.
+
+For Grundy numbers we want something that works like Kempe reductions
+but does the opposite. To increase the number of colours used.
 
 ![](figure/other_results_plot-1.png)<!-- -->
