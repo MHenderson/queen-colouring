@@ -28,15 +28,19 @@ tar_source()
 list(
   tar_target(
     name = experiments,
-    generate_experiments(n_iter = 50, orders = 5:16, seed = 42)
+    generate_experiments(n_iter = 20, orders = 5:16, seed = 42)
   ),
   tar_target(
     name = results,
     run_experiments(experiments)
   ),
   tar_target(
+    name = results2,
+    compute_n_colours(results)
+  ),
+  tar_target(
     name = plot,
-    plot_results(results)
+    plot_results(results2)
   ),
   tar_render(
     name = readme,

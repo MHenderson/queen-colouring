@@ -5,7 +5,7 @@ generate_experiments <- function(n_iter = 1, orders = 5:7, seed = 42) {
   seeds <- sample(1:100000, n_iter)
   files <- glue("queen{orders}_{orders}.col") %>% as.character()
 
-  experiments <- list(
+  list(
     problem_file = here("graphs", files),
             type = c("simple", "large", "small", "random"),
         ordering = c("inorder", "random", "decdeg", "incdeg"),
@@ -18,18 +18,19 @@ generate_experiments <- function(n_iter = 1, orders = 5:7, seed = 42) {
 
 run_experiments <- function(experiments) {
 
-  results <- experiments %>%
+  experiments %>%
     mutate(
-      n_colours = pmap_dbl(experiments, ccli_greedy_n_colours)
+      colouring = pmap(experiments, ccli_greedy_colouring)
     )
 
-  results <- results %>%
+}
+
+compute_n_colours <- function(results) {
+  results %>%
     mutate(
-      n = as.numeric(str_match(problem_file, "([0-9]+).col")[,2])
+      n = as.numeric(str_match(problem_file, "([0-9]+).col")[,2]),
+      n_colours = map_dbl(colouring, max)
     )
-
-  return(results)
-
 }
 
 plot_results <- function(results) {
