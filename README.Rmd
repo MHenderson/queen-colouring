@@ -32,3 +32,52 @@ library(targets)
 
 tar_read(plot)
 ```
+
+# Grundy Colourings of Queen Graphs
+
+```{r grundy_colouring, echo=FALSE, fig.height=8}
+library(dplyr)
+library(igraph)
+library(ggraph)
+library(tidygraph)
+
+results <- tar_read(results2)
+
+X <- results %>%
+  filter(n_colours == 2*n) %>%
+  filter(n == 12)
+
+i <- 1
+
+queen_graph <- read_graph(X[[i, "problem_file"]], format = "dimacs")
+
+queen5_tbl <- as_tbl_graph(queen_graph)
+
+queen5_tbl_c <- queen5_tbl %>%
+  activate(nodes) %>%
+  mutate(colour = X[[i, "colouring"]][[1]])
+
+# https://stackoverflow.com/questions/9563711/r-color-palettes-for-many-data-classes/41230685#41230685
+c25 <- c(
+  "dodgerblue2", "#E31A1C", # red
+  "green4",
+  "#6A3D9A", # purple
+  "#FF7F00", # orange
+  "black", "gold1",
+  "skyblue2", "#FB9A99", # lt pink
+  "palegreen2",
+  "#CAB2D6", # lt purple
+  "#FDBF6F", # lt orange
+  "gray70", "khaki2",
+  "maroon", "orchid1", "deeppink1", "blue1", "steelblue4",
+  "darkturquoise", "green1", "yellow4", "yellow3",
+  "darkorange4", "brown"
+)
+
+ggraph(queen5_tbl_c, layout = "grid") +
+  geom_node_tile(width = 1, height = 1, aes(fill = as.factor(colour))) +
+  geom_node_label(aes(label = colour)) +
+  theme_void() +
+  theme(legend.position = "none") +
+  scale_fill_manual(values = c25)
+```
