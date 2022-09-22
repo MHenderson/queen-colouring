@@ -31,7 +31,8 @@ ccli_greedy <- function(problem_file, seed = 42, type = "random", ordering = "lb
 
 ccli_greedy_colouring <- function(problem_file, seed = 42, type = "simple", ordering = "random", cheat = FALSE, kempe = FALSE) {
   colouring_res <- ccli_greedy(problem_file, seed, type, ordering, cheat, kempe)
-  d <- as.numeric(stringr::str_split(paste(colouring_res[2:3], collapse = " "), " ")[[1]])
+  n_output_rows <- length(colouring_res)
+  d <- as.numeric(stringr::str_split(paste(colouring_res[2:n_output_rows], collapse = " "), " ")[[1]])
   d <- d[!is.na(d)]
   return(d)
 }
