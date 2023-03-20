@@ -1,22 +1,18 @@
-generate_experiments <- function(n_iter = 1, orders = 5:7, seed = 42) {
+run_experiments <- function(x, n_iter = 20, seed = 42) {
 
   set.seed(seed)
 
   seeds <- sample(1:100000, n_iter)
-  files <- glue("queen{orders}_{orders}.col") %>% as.character()
 
-  list(
-    problem_file = here("graphs", files),
-            type = c("simple", "large", "small", "random"),
-        ordering = c("inorder", "random", "decdeg", "incdeg"),
-            seed = seeds,
-           cheat = c(TRUE, FALSE),
-           kempe = c(TRUE, FALSE)
-  ) %>% cross_df()
-
-}
-
-run_experiments <- function(experiments) {
+  experiments <- list(
+    problem_file = here::here("graphs", glue::glue("queen{x}_{x}.col")) %>% as.character(),
+    type = c("simple", "large", "small", "random"),
+    ordering = c("inorder", "random", "decdeg", "incdeg"),
+    seed = seeds,
+    cheat = FALSE,
+    kempe = c(TRUE, FALSE)
+  ) %>%
+    purrr::cross_df()
 
   experiments %>%
     mutate(

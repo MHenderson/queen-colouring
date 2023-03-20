@@ -39,13 +39,19 @@ tar_read(plot)
 library(dplyr)
 library(igraph)
 library(ggraph)
+library(here)
+library(targets)
 library(tidygraph)
 
-results <- tar_read(results2)
+results <- tar_read(results_end)
+
+N <- 5
 
 X <- results %>%
-  filter(n_colours == 2*n) %>%
-  filter(n == 12)
+  filter(grundy) %>%
+  filter(n == N) %>%
+  filter(kempe == FALSE) %>%
+  slice_max(n_colours)
 
 i <- 1
 
@@ -79,5 +85,8 @@ ggraph(queen5_tbl_c, layout = "grid") +
   geom_node_label(aes(label = colour)) +
   theme_void() +
   theme(legend.position = "none") +
-  scale_fill_manual(values = c25)
+  scale_fill_manual(values = c25) +
+  coord_fixed()
+
+#ggsave(here("plots", paste0("queen_", N, "_grundy.png")))
 ```

@@ -6,10 +6,11 @@
 # Load packages required to define the pipeline:
 library(targets)
 library(tarchetypes) # Load other packages as needed. # nolint
+library(tibble) # Load other packages as needed. # nolint
 
 # Set target options:
 tar_option_set(
-  packages = c("dplyr", "ggplot2", "glue", "here", "purrr", "stringr"), # packages that your targets need to run
+  packages = c("dplyr", "ggplot2", "glue", "here", "igraph", "purrr", "stringr", "tidygraph"), # packages that your targets need to run
   format = "rds" # default storage format
   # Set other options as needed.
 )
@@ -26,21 +27,34 @@ tar_source()
 
 # Replace the target list below with your own:
 list(
-  tar_target(
-    name = experiments,
-    generate_experiments(n_iter = 20, orders = 5:16, seed = 42)
+  mapped <- tar_map(
+    values = tibble(
+      order = 5:16
+    ),
+    tar_target(
+      name = runs,
+      command = run_experiments(order, n_iter = 10)
+    )
+  ),
+  combined <- tarchetypes::tar_combine(
+    results,
+    mapped,
+    command = dplyr::bind_rows(!!!.x)
   ),
   tar_target(
-    name = results,
-    run_experiments(experiments)
+    name = results_v,
+    results %>%
+      mutate(
+        grundy = map2_lgl(problem_file, colouring, is_grundy_pc)
+      )
   ),
   tar_target(
-    name = results2,
-    compute_n_colours(results)
+    name = results_end,
+    compute_n_colours(results_v)
   ),
   tar_target(
     name = plot,
-    plot_results(results2)
+    plot_results(results_end %>% filter(grundy))
   ),
   tar_render(
     name = readme,

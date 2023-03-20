@@ -1,0 +1,59 @@
+
+R version 4.0.5 (2021-03-31) -- "Shake and Throw"
+Copyright (C) 2021 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+* Project '/home/matthew/workspace/queen-colouring' loaded. [renv 0.13.2]
+> # This is a helper script to run the pipeline.
+> # Choose how to execute the pipeline below.
+> # See https://books.ropensci.org/targets/hpc.html
+> # to learn about your options.
+> 
+> targets::tar_make()
+• start target experiments
+• built target experiments [0.934 seconds]
+• start target results
+• built target results [9.498 minutes]
+• start target plot
+• built target plot [0.063 seconds]
+• start target readme
+
+Attaching package: 'igraph'
+
+The following objects are masked from 'package:purrr':
+
+    compose, simplify
+
+The following objects are masked from 'package:dplyr':
+
+    as_data_frame, groups, union
+
+The following objects are masked from 'package:stats':
+
+    decompose, spectrum
+
+The following object is masked from 'package:base':
+
+    union
+
+• built target readme [3.885 seconds]
+• end pipeline [9.586 minutes]
+There were 50 or more warnings (use warnings() to see the first 50)
+> # targets::tar_make_clustermq(workers = 2) # nolint
+> # targets::tar_make_future(workers = 2) # nolint
+> 
+> proc.time()
+   user  system elapsed 
+169.304  53.608 580.029 
