@@ -1,0 +1,7 @@
+name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
+.Random.seed|object|6540839a22a64da8
+ccli_greedy|function|5461325880758aad
+ccli_greedy_colouring|function|e5b1d9c8521a2f46
+ccli_greedy_n_colours|function|647e6e082366488b
+experiments|stem|79587139ae513a21|99c81e4fc3cd8be1|2c530c1562a7fbd1|-371275166||t20193.7611771195s|s11939b|11939|rds|local|vector|||1.15|[1m[22m`cross_df()` was deprecated in purrr 1.0.0. [36mℹ[39m Please use `tidyr::expand_grid()` instead. [36mℹ[39m See <https://github.com/tidyverse/purrr/issues/768>.|
+results|stem||5319f73860f65a65|a133f6335e38cb36|-322906963||t20193.7611809169s||0|rds|local|vector|||0.202||[1m[22m[36mℹ[39m In argument: `colouring = pmap(experiments, ccli_greedy_colouring)`. [1mCaused by error in `pmap()`:[22m [1m[22m[36mℹ[39m In index: 1. [1mCaused by error in `readLines()`:[22m [33m![39m cannot open the connection
