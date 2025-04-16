@@ -1,7 +1,7 @@
 library(targets)
 
 tar_option_set(
-  packages = c("dplyr", "ggplot2", "glue", "here", "purrr", "stringr"),
+  packages = c("dplyr", "ggplot2", "glue", "here", "purrr", "stringr", "tidyr"),
     format = "rds"
 )
 
@@ -12,21 +12,21 @@ list(
        name = experiments,
     command = {
       
-      orders <- 5:6
+      orders <- 5:14
 
       set.seed(42)
 
       seeds <- sample(1:100000, 4)
       files <- glue("queen{orders}_{orders}.col") |> as.character()
 
-      list(
+      expand_grid(
         problem_file = here("graphs", files),
                 type = c("simple", "large", "small", "random"),
             ordering = c("inorder", "random", "decdeg", "incdeg"),
                 seed = seeds,
                cheat = c(TRUE, FALSE),
                kempe = c(TRUE, FALSE)
-      ) |> cross_df()
+      )
     }
 
   ),
