@@ -12,11 +12,11 @@ list(
        name = experiments,
     command = {
       
-      orders <- 5:14
+      orders <- 5:16
 
       set.seed(42)
 
-      seeds <- sample(1:100000, 4)
+      seeds <- sample(1:100000, 20)
       files <- glue("queen{orders}_{orders}.col") |> as.character()
 
       expand_grid(
