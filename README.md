@@ -1,4 +1,4 @@
 # queen-colouring
 
-![](plot/plot.png)
+![](plot/results.png)
 
