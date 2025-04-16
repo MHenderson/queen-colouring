@@ -1,7 +1,10 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|6540839a22a64da8
+experiments|stem|4703749987a4ddb2|f7c85844b3c68ccb|2c530c1562a7fbd1|-371275166||t20194.326097756s|s692b|692|rds|local|vector|||0.795|[1m[22m`cross_df()` was deprecated in purrr 1.0.0. [36mℹ[39m Please use `tidyr::expand_grid()` instead. [36mℹ[39m See <https://github.com/tidyverse/purrr/issues/768>.|
+results|stem|993437f5fcd20dbb|5319f73860f65a65|9b1f98684f9e21a4|-322906963||t20194.3263472503s|s7343b|7343|rds|local|vector|||21.467||
+results2|stem|808538c818cfc352|90d73920e6472f3d|fa53a12ac63cc9e0|1096601353||t20194.3263486855s|s7574b|7574|rds|local|vector|||0.011||
+plot|stem|a16b7ffa16481824|25345f202afc5946|48fa6f5fa58be45d|874984291||t20194.3263511392s|s178037b|178037|rds|local|vector|||0.071||
+.Random.seed|object|d95db9b5d961d7cb
 ccli_greedy|function|5461325880758aad
 ccli_greedy_colouring|function|e5b1d9c8521a2f46
 ccli_greedy_n_colours|function|647e6e082366488b
-experiments|stem|79587139ae513a21|99c81e4fc3cd8be1|2c530c1562a7fbd1|-371275166||t20193.7611771195s|s11939b|11939|rds|local|vector|||1.15|[1m[22m`cross_df()` was deprecated in purrr 1.0.0. [36mℹ[39m Please use `tidyr::expand_grid()` instead. [36mℹ[39m See <https://github.com/tidyverse/purrr/issues/768>.|
-results|stem||5319f73860f65a65|a133f6335e38cb36|-322906963||t20193.7611809169s||0|rds|local|vector|||0.202||[1m[22m[36mℹ[39m In argument: `colouring = pmap(experiments, ccli_greedy_colouring)`. [1mCaused by error in `pmap()`:[22m [1m[22m[36mℹ[39m In index: 1. [1mCaused by error in `readLines()`:[22m [33m![39m cannot open the connection
+save_plot|stem|7db098e3cfa189cd|017734b36f7e2bdc|f1b75a332c62f3fb|-1898771178||t20194.3315892611s|s68b|68|rds|local|vector|||1.601||

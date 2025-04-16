@@ -12,13 +12,11 @@ list(
        name = experiments,
     command = {
       
-      n_iter <- 20
-      orders <- 5:16
-      seed <- 42
+      orders <- 5:6
 
-      set.seed(seed)
+      set.seed(42)
 
-      seeds <- sample(1:100000, n_iter)
+      seeds <- sample(1:100000, 4)
       files <- glue("queen{orders}_{orders}.col") |> as.character()
 
       list(
@@ -67,6 +65,18 @@ list(
           xlim(0, 30) +
           theme_minimal()
 
+    }
+  ),
+  tar_target(
+       name = save_plot,
+    command = {
+      ggsave(
+            plot = plot,
+        filename = "plot/results.png",
+           width = 4000,
+          height = 3000,
+           units = "px"
+      )
     }
   )
 )
