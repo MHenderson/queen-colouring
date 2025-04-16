@@ -1,0 +1,10 @@
+name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
+.Random.seed|object|6e0f675daa407cfb
+ccli_greedy|function|5461325880758aad
+ccli_greedy_colouring|function|e5b1d9c8521a2f46
+ccli_greedy_n_colours|function|647e6e082366488b
+experiments|stem|275fd696eead9d22|ed83bdfd1c970a69|2c530c1562a7fbd1|-371275166||t20194.3377120262s|s1902b|1902|rds|local|vector|||0.55||
+results|stem|f663c4cc950a8892|5319f73860f65a65|e27da1e08bde45fe|-322906963||t20194.3391017874s|s99434b|99434|rds|local|vector|||119.771||
+results2|stem|97a84882803f3667|90d73920e6472f3d|37196a4581299de6|1096601353||t20194.3391041023s|s100597b|100597|rds|local|vector|||0.021||
+plot|stem|ba88cc36055113d7|25345f202afc5946|e074b5f7c379a430|874984291||t20194.3391077598s|s276881b|276881|rds|local|vector|||0.093||
+save_plot|stem|7db098e3cfa189cd|017734b36f7e2bdc|ac235922244ad8bb|-1898771178||t20194.3391250286s|s68b|68|rds|local|vector|||1.359||
